@@ -6,13 +6,16 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace NET2
 {
     class ViewModel:INotifyPropertyChanged
     {
         Subject selectedSubject; //с которым работаем в данный момент
-        public ObservableCollection<Subject> Subjects { get; set;}
+        public static ObservableCollection<Subject> Subjects { get; set;}
+        public ListCollectionView col { get; set; }
+
         public static string SearchedHours { get; set; }//параметр фильтра
 
         //добавление(реализовать!)
@@ -51,6 +54,8 @@ namespace NET2
                 new Subject {Name="Физкультура", Teacher="Пупкин В.С.",Category=Subject.CategoryList[3], Hours=300, Description="Описание" },
                 new Subject {Name="Курсовая", Teacher="Сидоров С.С.",Category=Subject.CategoryList[3], Hours=1, Description="Описание" }
             };
+            col = new ListCollectionView(Subjects);
+            col.GroupDescriptions.Add(new PropertyGroupDescription("Category"));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -9,35 +9,8 @@
         Title="MainWindow">
     <Window.Resources>
         <converter:IntHoursConverter x:Key="IntHoursConverter"/>
-        <DataTemplate x:Key="SubjectTemplate">
-            <Grid Name="Row">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="0.8*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Border Padding="1" Grid.Column="0" BorderThickness="1" BorderBrush="Black">
-                    <TextBlock x:Name="SubjectName" Text="{Binding Name}"/>
-                </Border>
-                <Border Padding="1" Grid.Column="1" BorderThickness="1" BorderBrush="Black">
-                    <TextBlock x:Name="Teacher" Text="{Binding Teacher}"/>
-                </Border>
-                <Border Padding="1" Grid.Column="2" BorderThickness="1" BorderBrush="Black">
-                    <TextBlock x:Name="Hours" Text="{Binding Hours}"/>
-                </Border>
-            </Grid>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding HoursComparasion}" Value="Equal">
-                    <Setter TargetName="Row" Property="Background" Value="Green"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding HoursComparasion}" Value="Less">
-                    <Setter TargetName="Row" Property="Background" Value="Red"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding HoursComparasion}" Value="Equal">
-                    <Setter TargetName="Row" Property="Background" Value="Yellow"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
+       
+        <!--Styles-->
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Margin" Value="5"></Setter>
@@ -54,6 +27,24 @@
             <Setter Property="Margin" Value="5"></Setter>
             <Setter Property="Padding" Value="2"></Setter>
             <Setter Property="BorderBrush" Value="Gray"></Setter>
+        </Style>
+        <!--For groupping-->
+        <Style x:Key="GroupHeaderStyle"
+               TargetType="{x:Type GroupItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                        <Expander x:Name="exp" IsExpanded="True" Background="White" Foreground="Black">
+                            <Expander.Header>
+                                <TextBlock Text="{Binding Name}"></TextBlock>
+                            </Expander.Header>
+                            <Expander.Content>
+                                 <ItemsPresenter/>
+                            </Expander.Content>
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Window.Resources>
     <Grid>
@@ -73,7 +64,7 @@
             <TextBox VerticalAlignment="Center" Width="100"></TextBox>
         </StackPanel>
         
-        <DataGrid x:Name="grSubjects" Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject}"
+        <DataGrid x:Name="grSubjects" Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding col}" SelectedItem="{Binding SelectedSubject}"
                   IsReadOnly="True" Focusable="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Предмет" Width="0.3*" Binding="{Binding Path=Name}" IsReadOnly="True"></DataGridTextColumn>
@@ -81,6 +72,16 @@
                 <DataGridTextColumn Header="Кол-во часов" Width="0.2*" Binding="{Binding Path=Hours}" IsReadOnly="True"></DataGridTextColumn>
                 <DataGridTextColumn Header="Категория" Width="0.25*" Binding="{Binding Path=Category}" IsReadOnly="True"></DataGridTextColumn>
             </DataGrid.Columns>
+            
+            <DataGrid.GroupStyle>
+                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <DataGridRowsPresenter/>
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
         </DataGrid>
         
         <StackPanel Grid.Column="1" Grid.Row="1" DataContext="{Binding SelectedSubject}">

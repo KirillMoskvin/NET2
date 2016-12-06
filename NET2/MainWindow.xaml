@@ -72,19 +72,16 @@
             <TextBox VerticalAlignment="Center" Width="100"></TextBox>
             <TextBox VerticalAlignment="Center" Width="100"></TextBox>
         </StackPanel>
-        <ListBox Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Subjects}"
-                 SelectedItem="{Binding SelectedSubject}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Margin="5">
-                        <TextBlock FontSize="16" Text="{Binding Path=Name}"/>
-                        <TextBlock Text="{Binding Path=Teacher}"/>
-                        <TextBlock Text="{Binding Path=Category}"/>
-                        <TextBlock Text="{Binding Path=Hours, Converter={StaticResource IntHoursConverter}}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        
+        <DataGrid x:Name="grSubjects" Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding Subjects}" SelectedItem="{Binding SelectedSubject}"
+                  IsReadOnly="True" Focusable="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Предмет" Width="0.3*" Binding="{Binding Path=Name}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="Преподаватель" Width="0.25*" Binding="{Binding Path=Teacher}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="Кол-во часов" Width="0.2*" Binding="{Binding Path=Hours}" IsReadOnly="True"></DataGridTextColumn>
+                <DataGridTextColumn Header="Категория" Width="0.25*" Binding="{Binding Path=Category}" IsReadOnly="True"></DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         
         <StackPanel Grid.Column="1" Grid.Row="1" DataContext="{Binding SelectedSubject}">
             <TextBlock FontSize="20" Text="Редактирование"/>

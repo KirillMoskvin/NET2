@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace NET2
@@ -17,10 +18,6 @@ namespace NET2
         public ListCollectionView col { get; set; } // для группировки
         int searchedMinHours; //для фильтрации
         int searchedMaxHours;
-
-
-        
-
 
         //добавление(реализовать!)
         public void Add()
@@ -60,6 +57,7 @@ namespace NET2
             };
             col = new ListCollectionView(Subjects);
             col.GroupDescriptions.Add(new PropertyGroupDescription("Category"));
+            selectedSubject = null;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -85,6 +83,9 @@ namespace NET2
 
         }
 
+        /// <summary>
+        /// Пересчет диапазонов часов при изменении фильтра
+        /// </summary>
         public  int SearchedMinHours
         {
             get { return searchedMinHours; }
@@ -101,6 +102,19 @@ namespace NET2
             {
                 searchedMaxHours = value;
                 compareHours(searchedMinHours, searchedMaxHours);
+            }
+        }
+
+        /// <summary>
+        /// Для корректного отображения панели редактирования
+        /// </summary>
+        Visibility IsRedactPanelVisible
+        {
+            get
+            {
+                if (selectedSubject != null)
+                    return Visibility.Collapsed;
+                return Visibility.Visible;
             }
         }
     }

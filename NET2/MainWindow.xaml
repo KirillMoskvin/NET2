@@ -36,7 +36,7 @@
                     <ControlTemplate TargetType="{x:Type GroupItem}">
                         <Expander x:Name="exp" IsExpanded="True" Background="White" Foreground="Black">
                             <Expander.Header>
-                                <TextBlock Text="{Binding Name}"></TextBlock>
+                                <TextBlock Text="{Binding Name}" Background="Aquamarine"></TextBlock>
                             </Expander.Header>
                             <Expander.Content>
                                  <ItemsPresenter/>
@@ -46,7 +46,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
+        <!--For filtering-->
         <Style TargetType="DataGridRow" x:Key="DataGridDemoRowStyle" >
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Comparasion}" Value="Less" >
@@ -64,13 +64,27 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="HighlightRow" TargetType="{x:Type DataGridRow}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Hours}" Value="100">
-                    <Setter Property="Background" Value="Red" />
-                </DataTrigger>
-            </Style.Triggers>
+        <!--For validation-->
+        <Style x:Key="ErrorMessageStyle"
+               TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Red"></Setter>
         </Style>
+        <Style x:Key="InvalidBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="Red"></Setter>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+        </Style>
+
+        <ControlTemplate x:Key="ValidationTextBoxTemplate">
+            <DockPanel>
+                <Border DockPanel.Dock="Top"
+                        Style="{StaticResource InvalidBorderStyle}">
+                    <AdornedElementPlaceholder></AdornedElementPlaceholder>
+                </Border>
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource ErrorMessageStyle}"
+                           Text="{Binding Path=[0].ErrorContent}"></TextBlock>
+            </DockPanel>
+        </ControlTemplate>
         
     </Window.Resources>
     <Grid>
@@ -84,11 +98,28 @@
         </Grid.ColumnDefinitions>
         <!--Components for filtering-->
         <DockPanel>
-            <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" Grid.Row="0" Text="Фильтр часов:"></TextBlock>
+            <TextBlock Text="Количество часов: " HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Label Content="от" VerticalAlignment="Center"></Label>
-            <TextBox VerticalAlignment="Center" Width="100" Margin="1" HorizontalAlignment="Left" Text="{Binding SearchedMinHours, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+            <TextBox Validation.ErrorTemplate="{StaticResource ValidationTextBoxTemplate}" VerticalAlignment="Center" Width="100" Margin="0" HorizontalAlignment="Left">
+                <TextBox.Text>
+                    <Binding Path="SearchedMinHours" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:NonNegativeValidationRule></local:NonNegativeValidationRule>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <Label Content="до" VerticalAlignment="Center"></Label>
-            <TextBox VerticalAlignment="Center" Width="100" Margin="1" HorizontalAlignment="Left" Text="{Binding SearchedMaxHours, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+            <TextBox Validation.ErrorTemplate="{StaticResource ValidationTextBoxTemplate}" VerticalAlignment="Center" Width="100" Margin="0" HorizontalAlignment="Left">
+                <TextBox.Text>
+                    <Binding Path="SearchedMaxHours" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:RequiredValidationRule></local:RequiredValidationRule>
+                            <local:NonNegativeValidationRule></local:NonNegativeValidationRule>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
         </DockPanel>
         
         <DataGrid x:Name="grSubjects" Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding col}" SelectedItem="{Binding SelectedSubject}"
@@ -114,14 +145,40 @@
             </DataGrid.GroupStyle>
         </DataGrid>
         
+        <!--Панель для редактирования-->
         <StackPanel Grid.Column="1" Grid.Row="1" DataContext="{Binding SelectedSubject}">
             <TextBlock FontSize="20" Text="Редактирование"/>
             <TextBlock Text="Название:"/>
-            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Validation.ErrorTemplate="{StaticResource ValidationTextBoxTemplate}">
+                <TextBox.Text>
+                    <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:RequiredValidationRule></local:RequiredValidationRule>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <TextBlock Text="Преподаватель:"/>
-            <TextBox Text="{Binding Teacher, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Validation.ErrorTemplate="{StaticResource ValidationTextBoxTemplate}">
+                <TextBox.Text>
+                    <Binding Path="Teacher" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:RequiredValidationRule></local:RequiredValidationRule>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <TextBlock Text="Количество часов: "/>
-            <TextBox Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Validation.ErrorTemplate="{StaticResource ValidationTextBoxTemplate}">
+                <TextBox.Text>
+                    <Binding Path="Hours" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:RequiredValidationRule></local:RequiredValidationRule>
+                            <local:NonNegativeValidationRule></local:NonNegativeValidationRule>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
             <TextBlock Text="Категория"></TextBlock>
             <ComboBox SelectedItem="{Binding Category}" ItemsSource="{Binding CategoryList}"></ComboBox>
             <TextBlock Text="Описание: "></TextBlock>

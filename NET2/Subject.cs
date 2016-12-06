@@ -15,9 +15,11 @@ namespace NET2
         string teacher;//преводаватель
         int hours; //количество часов
         string description;//описание
+        HoursComparaion state=HoursComparaion.Incorrect; //нахождение в диапазоне
         string category;
         static ObservableCollection<string> categoryList = new ObservableCollection<string>
             { "Программирование", "Математика", "Гуманитарное", "Другое"};
+
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -76,6 +78,17 @@ namespace NET2
                 OnPropertyChanged("Category");
             }
         }
+
+        public HoursComparaion Comparasion
+        {
+            get { return state; }
+            set
+            {
+                state = value;
+                OnPropertyChanged("Comparasion");
+            }
+        }
+
         public static ObservableCollection<string> CategoryList
         {
             get { return categoryList; }
@@ -84,5 +97,18 @@ namespace NET2
                 categoryList = value;
             }
         }
+
+        /// <summary>
+        /// для реализации фильтрации
+        /// </summary>
+        public enum HoursComparaion
+        {
+            Less = -1,
+            In = 0,
+            More = 1,
+            Incorrect = -2
+        }
+
+        
     }
 }

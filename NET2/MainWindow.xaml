@@ -46,6 +46,32 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="DataGridRow" x:Key="DataGridDemoRowStyle" >
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Comparasion}" Value="Less" >
+                    <Setter Property="Background" Value="Red" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Comparasion}" Value="In" >
+                    <Setter Property="Background" Value="Green" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Comparasion}" Value="More" >
+                    <Setter Property="Background" Value="Blue" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Comparasion}" Value="Incorrect" >
+                    <Setter Property="Background" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="HighlightRow" TargetType="{x:Type DataGridRow}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Hours}" Value="100">
+                    <Setter Property="Background" Value="Red" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -56,23 +82,27 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="0.8*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel>
-            <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="Фильтр часов:">
-                
-            </TextBlock>
-            <TextBox VerticalAlignment="Center" Width="100"></TextBox>
-            <TextBox VerticalAlignment="Center" Width="100"></TextBox>
-        </StackPanel>
+        <!--Components for filtering-->
+        <DockPanel>
+            <TextBlock Grid.ColumnSpan="2" VerticalAlignment="Center" Grid.Row="0" Text="Фильтр часов:"></TextBlock>
+            <Label Content="от" VerticalAlignment="Center"></Label>
+            <TextBox VerticalAlignment="Center" Width="100" Margin="1" HorizontalAlignment="Left" Text="{Binding SearchedMinHours, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+            <Label Content="до" VerticalAlignment="Center"></Label>
+            <TextBox VerticalAlignment="Center" Width="100" Margin="1" HorizontalAlignment="Left" Text="{Binding SearchedMaxHours, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        </DockPanel>
         
         <DataGrid x:Name="grSubjects" Grid.Row="1" AutoGenerateColumns="False" ItemsSource="{Binding col}" SelectedItem="{Binding SelectedSubject}"
-                  IsReadOnly="True" Focusable="False">
+                  IsReadOnly="True" Focusable="False"
+                  RowStyle="{StaticResource DataGridDemoRowStyle}">
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Предмет" Width="0.3*" Binding="{Binding Path=Name}" IsReadOnly="True"></DataGridTextColumn>
                 <DataGridTextColumn Header="Преподаватель" Width="0.25*" Binding="{Binding Path=Teacher}" IsReadOnly="True"></DataGridTextColumn>
                 <DataGridTextColumn Header="Кол-во часов" Width="0.2*" Binding="{Binding Path=Hours}" IsReadOnly="True"></DataGridTextColumn>
                 <DataGridTextColumn Header="Категория" Width="0.25*" Binding="{Binding Path=Category}" IsReadOnly="True"></DataGridTextColumn>
             </DataGrid.Columns>
-            
+           
+            <!--groupping-->
             <DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                     <GroupStyle.Panel>

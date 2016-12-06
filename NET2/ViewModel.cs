@@ -14,9 +14,13 @@ namespace NET2
     {
         Subject selectedSubject; //с которым работаем в данный момент
         public static ObservableCollection<Subject> Subjects { get; set;}
-        public ListCollectionView col { get; set; }
+        public ListCollectionView col { get; set; } // для группировки
+        int searchedMinHours; //для фильтрации
+        int searchedMaxHours;
 
-        public static string SearchedHours { get; set; }//параметр фильтра
+
+        
+
 
         //добавление(реализовать!)
         public void Add()
@@ -65,29 +69,39 @@ namespace NET2
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        public enum HoursComparaion
+        void compareHours(int hour1, int hour2)
         {
-            Less=-1,
-            Equal=0,
-            More=1,
-            NotDate=-2
+            foreach (Subject subj in Subjects)
+            {
+                if (hour2 < hour1 || ( hour2 <= 0 && hour1 <= 0))
+                    subj.Comparasion= Subject.HoursComparaion.Incorrect;
+                else if (subj.Hours < hour1)
+                        subj.Comparasion = Subject.HoursComparaion.Less;
+                    else if (subj.Hours >= hour1 && subj.Hours <= hour2)
+                        subj.Comparasion = Subject.HoursComparaion.In;
+                        else
+                            subj.Comparasion = Subject.HoursComparaion.More;
+            }
+
         }
 
-        HoursComparaion compareHours(string hour)
+        public  int SearchedMinHours
         {
-            int value = 0;
-            if (!int.TryParse(hour, out value))
-                return HoursComparaion.NotDate;
-            else if (value == selectedSubject.Hours)
-                return HoursComparaion.Equal;
-            else if (value > selectedSubject.Hours)
-                return HoursComparaion.More;
-            return HoursComparaion.Less;
+            get { return searchedMinHours; }
+            set
+            {
+                searchedMinHours = value;
+                compareHours(searchedMinHours, searchedMaxHours);
+            }
         }
-
-        public HoursComparaion HoursComparasion
+        public int SearchedMaxHours
         {
-            get { return compareHours(SearchedHours); }
+            get { return searchedMaxHours; }
+            set
+            {
+                searchedMaxHours = value;
+                compareHours(searchedMinHours, searchedMaxHours);
+            }
         }
     }
 }
